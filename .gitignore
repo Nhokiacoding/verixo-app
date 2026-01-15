@@ -1,0 +1,83 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+out/
+.vite/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Debug and test files
+test-*.js
+test-*.html
+verify-*.js
+check-*.js
+
+# Documentation (keep only essential)
+*_COMPLETE.md
+*_FIXED.md
+*_CHECK.md
+*_ANALYSIS.md
+*_ISSUE.md
+*_FIX.md
+*_STATUS.md
+*_STEPS.md
+*_IMPROVEMENTS.md
+*_UPDATE.md
+*_SUMMARY.md
+*_GUIDE.md
+*_CHECKLIST.md
+*_EXPLAINED.md
+*_READY.md
+
+# Keep these important docs
+!README.md
+!API_SETUP.md
+
+# Public test files
+public/test-*.html
+public/auth-flow-diagram.html
+public/security-demo.html
+public/logo-test.html
