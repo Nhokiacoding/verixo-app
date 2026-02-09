@@ -1,3 +1,6 @@
+# Backend folder (separate repo)
+backend/
+
 # Dependencies
 node_modules/
 package-lock.json
