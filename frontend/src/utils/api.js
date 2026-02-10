@@ -1,10 +1,24 @@
 // API utility for making requests to the backend
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
+// Check if we're in production and backend is not available
+const isProduction = import.meta.env.MODE === 'production';
+const BACKEND_AVAILABLE = !isProduction; // Set to true when backend is deployed
+
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
-    console.log('API Base URL:', this.baseURL); // Debug log
+    console.log('API Base URL:', this.baseURL);
+    console.log('Environment:', import.meta.env.MODE);
+    
+    if (isProduction && !BACKEND_AVAILABLE) {
+      console.warn('⚠️ Backend API is not yet deployed. Some features may not work.');
+    }
+  }
+
+  // Check if backend is available
+  isBackendAvailable() {
+    return BACKEND_AVAILABLE || !isProduction;
   }
 
   // Get auth token from localStorage
@@ -32,6 +46,11 @@ class ApiService {
   handleAPIError(error) {
     console.error('API Error:', error);
     
+    // Check if it's a network/connection error
+    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+      return 'Unable to connect to the server. The service may be temporarily unavailable. Please try again in a few moments.';
+    }
+    
     // Return user-friendly error message
     if (error.message.includes('Insufficient wallet balance')) {
       return 'Insufficient wallet balance. Please fund your wallet to continue.';
@@ -45,14 +64,23 @@ class ApiService {
       return 'Server is temporarily unavailable. Please try again in a moment.';
     }
     
-    if (error.message.includes('Failed to fetch')) {
-      return 'Unable to connect to server. Please check your internet connection.';
+    // Check for specific HTTP errors
+    if (error.message.includes('HTTP 404')) {
+      return 'Service endpoint not found. Please contact support.';
+    }
+    
+    if (error.message.includes('HTTP 500')) {
+      return 'Server error occurred. Please try again later.';
+    }
+    
+    if (error.message.includes('HTTP 401') || error.message.includes('HTTP 403')) {
+      return 'Authentication failed. Please check your credentials.';
     }
     
     return error.message || 'An unexpected error occurred. Please try again.';
   }
 
-  // Make API request
+  // Make API request with better error handling
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
     const config = {
@@ -62,7 +90,17 @@ class ApiService {
 
     try {
       console.log(`Making API request to: ${url}`);
-      const response = await fetch(url, config);
+      
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+      
+      const response = await fetch(url, {
+        ...config,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       
       // Check if response is ok first
       if (!response.ok) {
@@ -90,6 +128,12 @@ class ApiService {
       return data;
       
     } catch (error) {
+      // Handle abort/timeout errors
+      if (error.name === 'AbortError') {
+        console.error('Request timeout');
+        throw new Error('Request timeout. The server is taking too long to respond. Please try again.');
+      }
+      
       console.error('API Request failed:', error);
       const friendlyError = this.handleAPIError(error);
       throw new Error(friendlyError);

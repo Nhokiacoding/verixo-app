@@ -163,8 +163,17 @@ const UserRegister = () => {
         setIsSuccess(true);
       } catch (error) {
         console.error('Registration failed:', error);
+        
+        // Show user-friendly error message
+        let errorMessage = error.message || 'Registration failed. Please try again.';
+        
+        // Check if it's a connection error
+        if (errorMessage.includes('Unable to connect') || errorMessage.includes('temporarily unavailable')) {
+          errorMessage = 'Our servers are currently being set up. Please try again in a few minutes or contact support at felizcecilia48@gmail.com';
+        }
+        
         setErrors({
-          email: error.message || 'Registration failed. Please try again.',
+          email: errorMessage,
           firstName: '',
           lastName: '',
           password: '',
