@@ -136,7 +136,6 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-        <div className="hero-wave"></div>
       </section>
 
       {/* About Section */}
