@@ -10,7 +10,7 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'https://verixo-api.onrender.com',
+        target: 'https://verixo-app.onrender.com',
         changeOrigin: true,
         secure: true
       }
